@@ -10,7 +10,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -29,7 +28,6 @@ const (
 type Message struct {
 	Hostname       string
 	OS             string
-	Kernel         string
 	Uptime         string
 	Shell          string
 	CPU            string
@@ -77,7 +75,7 @@ func main() {
 	for {
 		hostname := getHostname()
 		osName := getOSName()
-		kernel := getKernelVersion()
+		// kernel := getKernelVersion()
 		uptime := getUptime()
 		shell := getShell()
 		cpu := getCPUName()
@@ -98,9 +96,9 @@ func main() {
 			return
 		}
 		msg := Message{
-			Hostname:       hostname,
-			OS:             osName,
-			Kernel:         kernel,
+			Hostname: hostname,
+			OS:       osName,
+			// Kernel:         kernel,
 			Uptime:         uptime,
 			Shell:          shell,
 			CPU:            cpu,
@@ -140,37 +138,37 @@ func getOSName() string {
 	return runtime.GOOS
 }
 
-func getKernelVersion() string {
-	var kernelVersion string
-	var err error
-	switch runtime.GOOS {
-	case "windows":
-		output, err := exec.Command("ver").Output()
-		if err != nil {
-			fmt.Printf("Error retrieving kernel version on Windows: %v", err)
-			return ""
-		}
-		kernelVersion = string(output)
-	case "linux", "darwin":
-		output, err := exec.Command("uname", "-r").Output()
-		if err != nil {
-			fmt.Printf("Error retrieving kernel version on %s: %v", runtime.GOOS, err)
-			return ""
-		}
-		kernelVersion = string(output)
-	case "freebsd", "openbsd", "netbsd":
-		kernelVersion, err = syscall.Sysctl("kern.version")
-		if err != nil {
-			fmt.Printf("Error retrieving kernel version on BSD: %v", err)
-			return ""
-		}
-	default:
-		fmt.Printf("Error: Kernel version retrieval not implemented for %s", runtime.GOOS)
-		return ""
-	}
+// func getKernelVersion() string {
+// 	var kernelVersion string
+// 	var err error
+// 	switch runtime.GOOS {
+// 	case "windows":
+// 		output, err := exec.Command("ver").Output()
+// 		if err != nil {
+// 			fmt.Printf("Error retrieving kernel version on Windows: %v", err)
+// 			return ""
+// 		}
+// 		kernelVersion = string(output)
+// 	case "linux", "darwin":
+// 		output, err := exec.Command("uname", "-r").Output()
+// 		if err != nil {
+// 			fmt.Printf("Error retrieving kernel version on %s: %v", runtime.GOOS, err)
+// 			return ""
+// 		}
+// 		kernelVersion = string(output)
+// 	case "freebsd", "openbsd", "netbsd":
+// 		kernelVersion, err = syscall.Sysctl("kern.version")
+// 		if err != nil {
+// 			fmt.Printf("Error retrieving kernel version on BSD: %v", err)
+// 			return ""
+// 		}
+// 	default:
+// 		fmt.Printf("Error: Kernel version retrieval not implemented for %s", runtime.GOOS)
+// 		return ""
+// 	}
 
-	return strings.TrimSpace(kernelVersion)
-}
+// 	return strings.TrimSpace(kernelVersion)
+// }
 
 func getUptime() string {
 	var uptime string
